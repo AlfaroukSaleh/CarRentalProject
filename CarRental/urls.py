@@ -3,6 +3,6 @@ from . import views
 
 
 app_name = "CarRental"
-url_patterns = [
+urlpatterns = [
     path("", views.index, name="index")
 ]
