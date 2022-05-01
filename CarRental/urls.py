@@ -9,5 +9,6 @@ urlpatterns = [
          name="adduserindividual"),  # used to add individual users
     path("addusercorporate", views.addusercorporate,
          name="addusercorporate"),  # used to add corporate users
+    path("login", views.login_view, name="login"),
 
 ]

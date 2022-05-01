@@ -1,0 +1,36 @@
+<html>
+
+<head>Login</head>
+
+
+<body>
+    {% for error in messages %}
+    <div class="text-center m-3 alert alert-danger">
+        {{error}}
+    </div>
+    {% endfor %}
+
+    {% if message %}
+    <div> {{message}} </div>
+    {%endif%}
+    <form class="user" method="post" action="{% url 'CarRental:login' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <input type="text" class="form-control form-control-user" id="exampleInputEmail"
+                aria-describedby="emailHelp" placeholder="Enter Email Address..." name="username">
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control form-control-user" id="exampleInputPassword"
+                placeholder="Enter Password..." name="password">
+        </div>
+
+        <input type="submit" class="btn btn-primary btn-user btn-block" value="Login">
+
+
+
+    </form>
+
+</body>
+
+</html>
