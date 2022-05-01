@@ -9,14 +9,14 @@ class Corporation(models.Model):
     discount_rate = models.FloatField()
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} : {self.corp_name}"
 
 
 class Insurance_company(models.Model):
     company_name = models.CharField(max_length=30)
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} : {self.company_name}"
 
 
 class User(models.Model):
@@ -39,7 +39,7 @@ class Corporate_customer(User):
         Corporation, on_delete=models.CASCADE, related_name="corporate")
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id}: {self.user_name}"
 
 
 class Individual_customer(User):
@@ -48,7 +48,7 @@ class Individual_customer(User):
         Insurance_company, on_delete=models.CASCADE, related_name="Insurance")
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id}: {self.user_name}"
 
 
 class Office (models.Model):
@@ -59,7 +59,7 @@ class Office (models.Model):
     phone_number = models.CharField(max_length=10)
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} : {self.city}"
 
 
 class Vehicle_class (models.Model):
@@ -68,7 +68,7 @@ class Vehicle_class (models.Model):
     over_mile_fee = models.FloatField()
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id}: {self.class_name}"
 
 
 class Vehicle (models.Model):
@@ -83,7 +83,7 @@ class Vehicle (models.Model):
         Vehicle_class, on_delete=models.CASCADE, related_name="class_vehicles")
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} : {self.make} : {self.vehicle_model}"
 
 
 class Coupon (models.Model):
@@ -93,7 +93,7 @@ class Coupon (models.Model):
     end_date = models.DateField(auto_now=False, auto_now_add=False)
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} : {self.coupon_num}"
 
 
 class Invoice (models.Model):
