@@ -1,5 +1,88 @@
-{% extends 'CarRental/layout.html' %}
+<html>
 
-{% block body %}
-<h1>Welcome to our site</h1>
-{% endblock %}
+<head>
+    <title>Make a Reservation</title>
+</head>
+
+
+<body>
+
+    </div>
+    {% for error in messages %}
+    <div class="text-center m-3 alert alert-danger">
+        {{error}}
+    </div>
+    {% endfor %}
+    <form class="user" method="post" action="{% url 'CarRental:makereservation' %}">
+
+        {% csrf_token %}
+
+        <div class="form-group row">
+            <div class="offset-3 col-sm-6 mb-3 mb-sm-0">
+                <select class="form-control" id="userTypeSelect" name="user_type">
+                    <option value="0">User Type</option>
+                    <option value="2">Parenting Specialist</option>
+                    <option value="3">Parent</option>
+                </select>
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            <input type="date" class="form-control form-control-user" placeholder="Pickup Date" name="pickup_date"
+                id="pickup_date">
+        </div>
+
+        <div class="form-group">
+            <input type="date" class="form-control form-control-user" placeholder="Dropoff Date" name="dropoff_date"
+                id="dropoff_date">
+        </div>
+
+        <div class="form-group">
+
+            <input type="number" class="form-control form-control-user" id="examplepickupoffice"
+                placeholder="Pickup Office" name="pickup_office_id">
+
+
+        </div>
+
+        <div class="form-group">
+
+            <input type="number" class="form-control form-control-user" id="exampledropoffoffice"
+                placeholder="Dropoff Office" name="dropoff_office_id">
+
+
+        </div>
+
+        <div class="form-group">
+
+            <input type="number" class="form-control form-control-user" id="examplevehicleclass" placeholder="Car Class"
+                name="vehicle_class_id">
+
+
+        </div>
+
+        <div class="form-group">
+
+            <input type="number" class="form-control form-control-user" id="examplestartodometer"
+                placeholder="Odometer Start" name="start_odometer">
+
+
+        </div>
+
+
+
+        <button type="submit" class="btn btn-danger btn-user btn-block">
+            Make Reservation
+        </button>
+
+    </form>
+
+
+
+    <a class="btn btn-primary" href="{% url 'CarRental:logout' %}">Logout</a>
+
+</body>
+
+</html>

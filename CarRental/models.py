@@ -110,7 +110,7 @@ class Payment(models.Model):
     card_number = models.CharField(max_length=16)
     payment_amount = models.FloatField()
     invoice_id = models.ForeignKey(
-        Invoice, blank=True, on_delete=models.CASCADE, related_name="payments")
+        Invoice, null=True, blank=True, on_delete=models.CASCADE, related_name="payments")
 
     def __str__(self):
         return f"{self.id}"

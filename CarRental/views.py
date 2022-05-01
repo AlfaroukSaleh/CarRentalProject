@@ -13,7 +13,10 @@ from django.contrib.auth import authenticate, login, logout
 
 
 def index(request):
-    return render(request, "CarRental/index.html")
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("CarRental:login"))
+    else:
+        return render(request, "CarRental/index.html")
 
 
 def adduserindividual(request):  # used for adding Indivdual users
@@ -133,7 +136,7 @@ def logout_view(request):
 
 def makereservation(request):
     if request.method == "GET":
-        return render(request, "CarRental/makereservation.html")
+        return render(request, "CarRental/index.html")
 
     if not request.user.is_authenticated:
         messages.error(request, "You are not authorized to view this page!")
