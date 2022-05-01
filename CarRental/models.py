@@ -119,7 +119,7 @@ class Payment(models.Model):
 class Rental_service(models.Model):
     pickup_date = models.DateField(auto_now=False, auto_now_add=False)
     dropoff_date = models.DateField(auto_now=False, auto_now_add=False)
-    start_odometer = models.FloatField(blank=True)
+    start_odometer = models.FloatField(null=True, blank=True)
     end_odometer = models.FloatField(null=True, blank=True)
     daily_limit = models.IntegerField(null=True, blank=True)
     vehicle_id = models.ForeignKey(

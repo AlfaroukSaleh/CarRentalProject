@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 import hashlib
 from itertools import chain
-from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation, Rental_service, Office
+from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation, Rental_service, Office, Vehicle_class
 from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
@@ -16,12 +16,17 @@ def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("CarRental:login"))
     else:
-        return render(request, "CarRental/index.html")
+        return render(request, "CarRental/index.html", {
+            "Car_classes": Vehicle_class.objects.all(),
+            "Offices": Office.objects.all()
+        })
 
 
 def adduserindividual(request):  # used for adding Indivdual users
     if request.method == "GET":
-        return render(request, "CarRental/adduserindividual.html")
+        return render(request, "CarRental/adduserindividual.html", {
+            "Insurance_companies": Insurance_company.objects.all()
+        })
 
     if request.user.is_authenticated:
         messages.error(request, "You are not authorized to view this page!")
@@ -34,7 +39,7 @@ def adduserindividual(request):  # used for adding Indivdual users
                 user_email=request.POST["user_email"]).first()
             if user_email_validator is not None:
                 messages.error(request, "This email was previously used!")
-                return HttpResponseRedirect(reverse("adduserindividual"))
+                return HttpResponseRedirect(reverse("CarRental:adduserindividual"))
 
                 # Checks if this number was previously used
             user_phone_validator = Individual_customer.objects.filter(
@@ -43,12 +48,12 @@ def adduserindividual(request):  # used for adding Indivdual users
             if user_phone_validator is not None:
                 messages.error(
                     request, "This phone number was previously used!")
-                return HttpResponseRedirect(reverse("adduserindividual"))
+                return HttpResponseRedirect(reverse("CarRental:adduserindividual"))
 
             if request.POST["user_pass1"] != request.POST["user_pass2"]:
                 messages.error(
                     request, "The two passwords don't match!")
-                return HttpResponseRedirect(reverse("adduserindividual"))
+                return HttpResponseRedirect(reverse("CarRental:adduserindividual"))
 
                 # Creates a new user
             user = Individual_customer(user_name=request.POST["user_name"], user_email=request.POST["user_email"], user_phone=request.POST[
@@ -57,13 +62,19 @@ def adduserindividual(request):  # used for adding Indivdual users
             user2 = User.objects.create_user(username=request.POST["user_name"],
                                              email=request.POST["user_email"],
                                              password=request.POST["user_pass1"])
+            u = authenticate(
+                request, username=request.POST["user_name"], password=request.POST["user_pass1"])
+            messages.success(request, "User added successfuly")
+            login(request, u)
             messages.success(request, "User added successfuly")
             return HttpResponseRedirect(reverse("CarRental:index"))
 
 
 def addusercorporate(request):  # used for adding Corporate users
     if request.method == "GET":
-        return render(request, "CarRental/addusercorporate.html")
+        return render(request, "CarRental/addusercorporate.html", {
+            "Corporations": Corporation.objects.all()
+        })
 
     if request.user.is_authenticated:
         messages.error(request, "You are not authorized to view this page!")
@@ -76,7 +87,7 @@ def addusercorporate(request):  # used for adding Corporate users
                 user_email=request.POST["user_email"]).first()
             if user_email_validator is not None:
                 messages.error(request, "This email was previously used!")
-                return HttpResponseRedirect(reverse("addusercorporate"))
+                return HttpResponseRedirect(reverse("CarRental:addusercorporate"))
 
                 # Checks if this number was previously used
             user_phone_validator = Individual_customer.objects.filter(
@@ -85,12 +96,12 @@ def addusercorporate(request):  # used for adding Corporate users
             if user_phone_validator is not None:
                 messages.error(
                     request, "This phone number was previously used!")
-                return HttpResponseRedirect(reverse("addusercorporate"))
+                return HttpResponseRedirect(reverse("CarRental:addusercorporate"))
 
             if request.POST["user_pass1"] != request.POST["user_pass2"]:
                 messages.error(
                     request, "The two passwords don't match!")
-                return HttpResponseRedirect(reverse("addusercorporate"))
+                return HttpResponseRedirect(reverse("CarRental:addusercorporate"))
 
                 # Creates a new user
             user = Corporate_customer(user_name=request.POST["user_name"], user_email=request.POST["user_email"], user_phone=request.POST[
@@ -99,7 +110,10 @@ def addusercorporate(request):  # used for adding Corporate users
             user2 = User.objects.create_user(username=request.POST["user_name"],
                                              email=request.POST["user_email"],
                                              password=request.POST["user_pass1"])
+            u = authenticate(
+                request, username=request.POST["user_name"], password=request.POST["user_pass1"])
             messages.success(request, "User added successfuly")
+            login(request, u)
             return HttpResponseRedirect(reverse("CarRental:index"))
 
 
@@ -152,13 +166,28 @@ def makereservation(request):
             if individual_customer is not None:
                 # This means we have an individual customer making a reservation
                 reservation = Rental_service(pickup_date=request.POST["pickup_date"], dropoff_date=request.POST["dropoff_date"], office_pickup=Office.objects.get(
-                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), individual_cust_id=individual_customer, start_odometer=request.POST["start_odometer"])
+                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), individual_cust_id=individual_customer)
                 reservation.save()
-                return HttpResponseRedirect(reverse("CarRental:index"))
+                # Head to the payment page with the reservation ID
+                return HttpResponseRedirect(reverse("CarRental:payment", args=(reservation.id,)))
             else:
                 # This means a corporate customer is making a reservation
                 reservation = Rental_service(pickup_date=request.POST["pickup_date"], dropoff_date=request.POST["dropoff_date"], office_pickup=Office.objects.get(
-                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), corporate_cust_id=corporate_customer, start_odometer=request.POST["start_odometer"])
+                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), corporate_cust_id=corporate_customer)
                 reservation.save()
-                return HttpResponseRedirect(reverse("CarRental:index"))
+                # Head to the payment page with the reservation ID
+                return HttpResponseRedirect(reverse("CarRental:payment", args=(reservation.id,)))
     return HttpResponseRedirect(reverse("CarRental:index"))
+
+
+def payment(request, reservation_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "You are not authorized to view this page!")
+        return HttpResponseRedirect(reverse("CarRental:login"))
+
+    return render(request, "CarRental/payment.html")
+    #
+    #
+    # The payment page shall be implemented here
+    #
+    #

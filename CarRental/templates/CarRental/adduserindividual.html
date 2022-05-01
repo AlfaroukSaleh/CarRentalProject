@@ -97,12 +97,15 @@
 
         </div>
 
-        <div class="form-group">
+        <div class="form-group row">
+            <div class="offset-3 col-sm-6 mb-3 mb-sm-0">
+                <select class="form-control" id="userTypeSelect" name="insurance_company_id">
+                    {% for insurance in Insurance_companies %}
 
-            <input type="number" class="form-control form-control-user" id="exampleInsuranceCompany"
-                placeholder="Insurance Company" name="insurance_company_id">
-
-
+                    <option value="{{insurance.id}}">{{insurance.company_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-user btn-block btn-primary">Create
