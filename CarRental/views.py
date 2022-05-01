@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
+from django.contrib.auth.models import User
+
 import hashlib
 from itertools import chain
 from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation
@@ -49,7 +51,9 @@ def adduserindividual(request):  # used for adding Indivdual users
             user = Individual_customer(user_name=request.POST["user_name"], user_email=request.POST["user_email"], user_phone=request.POST[
                 "user_phone"], user_password=hashlib.md5(request.POST["user_pass1"].encode()).hexdigest(), user_type=1, city=request.POST["city"], state=request.POST["state"], zip_code=request.POST["zip_code"], first_name=request.POST["first_name"], last_name=request.POST["last_name"], driver_lic_number=request.POST["driver_lic_number"], policy_num=request.POST["policy_num"], insurance_company_id=Insurance_company.objects.get(pk=request.POST["insurance_company_id"]))
             user.save()
-
+            user2 = User.objects.create_user(username=request.POST["user_name"],
+                                             email=request.POST["user_email"],
+                                             password=request.POST["user_pass1"])
             messages.success(request, "User added successfuly")
             return HttpResponseRedirect(reverse("CarRental:index"))
 
@@ -89,12 +93,18 @@ def addusercorporate(request):  # used for adding Corporate users
             user = Corporate_customer(user_name=request.POST["user_name"], user_email=request.POST["user_email"], user_phone=request.POST[
                 "user_phone"], user_password=hashlib.md5(request.POST["user_pass1"].encode()).hexdigest(), user_type=1, city=request.POST["city"], state=request.POST["state"], zip_code=request.POST["zip_code"], first_name=request.POST["first_name"], last_name=request.POST["last_name"], driver_lic_number=request.POST["driver_lic_number"], emp_id=request.POST["emp_id"], corp_id=Corporation.objects.get(pk=request.POST["corp_id"]))
             user.save()
-
+            user2 = User.objects.create_user(username=request.POST["user_name"],
+                                             email=request.POST["user_email"],
+                                             password=request.POST["user_pass1"])
             messages.success(request, "User added successfuly")
             return HttpResponseRedirect(reverse("CarRental:index"))
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        messages.error(request, "You are not authorized to view this page!")
+        return HttpResponseRedirect(reverse("CarRental:index"))
+
     if request.method == "POST":
         # here we enter the email address of the user
         username = request.POST["username"]
@@ -108,3 +118,14 @@ def login_view(request):
                 "message": "Invalid credentials"
             })
     return render(request, "CarRental/login.html")
+
+
+def logout_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "You are not authorized to view this page!")
+        return HttpResponseRedirect(reverse("CarRental:login"))
+    else:
+        logout(request)
+        return render(request, "CarRental/login.html", {
+            "message": "Logged out."
+        })

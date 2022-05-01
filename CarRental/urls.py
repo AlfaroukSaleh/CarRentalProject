@@ -10,5 +10,7 @@ urlpatterns = [
     path("addusercorporate", views.addusercorporate,
          name="addusercorporate"),  # used to add corporate users
     path("login", views.login_view, name="login"),
+    path("logout", views.logout_view, name="logout"),
+
 
 ]
