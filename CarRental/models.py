@@ -49,3 +49,74 @@ class Individual_customer(User):
 
     def __str__(self):
         return f"{self.id}"
+
+
+class Office (models.Model):
+    street = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
+    state = models.CharField(max_length=30)
+    zip_code = models.CharField(max_length=5)
+    phone_number = models.CharField(max_length=10)
+
+    def __str__(self):
+        return f"{self.id}"
+
+
+class Vehicle_class (models.Model):
+    class_name = models.CharField(max_length=20)
+    daily_rate = models.FloatField()
+    over_mile_fee = models.FloatField()
+
+
+class Vehicle (models.Model):
+    vin = models.CharField(max_length=20, unique=True)
+    make = models.CharField(max_length=20)
+    vehicle_model = models.CharField(max_length=30)
+    vehicle_year = models.IntegerField()
+    plate_num = models.CharField(max_length=10)
+    office_id = models.ForeignKey(
+        Office, on_delete=models.CASCADE, related_name="office_vehicles")
+    class_id = models.ForeignKey(
+        Vehicle_class, on_delete=models.CASCADE, related_name="class_vehicles")
+
+
+class Coupon (models.Model):
+    discount_percentage = models.FloatField()
+    start_date = models.DateField(auto_now=False, auto_now_add=False)
+    end_date = models.DateField(auto_now=False, auto_now_add=False)
+
+
+class Invoice (models.Model):
+    invoice_date = models.DateField(auto_now=False, auto_now_add=False)
+    amount = models.FloatField()
+
+
+class Payment(models.Model):
+    method = models.CharField(max_length=30)
+    payment_date = models.DateField(auto_now=False, auto_now_add=False)
+    card_number = models.CharField(max_length=16)
+    payment_amount = models.FloatField()
+    invoice_id = models.ForeignKey(
+        Invoice, blank=True, on_delete=models.CASCADE, related_name="payments")
+
+
+class Rental_service(models.Model):
+    pickup_date = models.DateField(auto_now=False, auto_now_add=False)
+    dropoff_date = models.DateField(auto_now=False, auto_now_add=False)
+    start_odometer = models.FloatField(blank=True)
+    end_odometer = models.FloatField(blank=True)
+    daily_limit = models.IntegerField(blank=True)
+    vehicle_id = models.ForeignKey(
+        Vehicle,  blank=True, on_delete=models.CASCADE, related_name="vehicle_rervations")
+    corporate_cust_id = models.ForeignKey(
+        Corporate_customer,  blank=True, on_delete=models.CASCADE, related_name="Corporate_cust_rervations")
+    individual_cust_id = models.ForeignKey(
+        Individual_customer,  blank=True, on_delete=models.CASCADE, related_name="Individual_cust_rervations")
+    coupun_num = models.ForeignKey(
+        Coupon,  blank=True, on_delete=models.CASCADE, related_name="coupon_rervations")
+    office_pickup = models.ForeignKey(
+        Office, on_delete=models.CASCADE, related_name="Pickup_office_rervations")
+    office_dropoff = models.ForeignKey(
+        Office, on_delete=models.CASCADE, related_name="dropoff_office_rervations")
+    rental_invoice_id = models.ForeignKey(
+        Invoice,  blank=True, on_delete=models.CASCADE, related_name="Invoice_rervations")
