@@ -67,6 +67,9 @@ class Vehicle_class (models.Model):
     daily_rate = models.FloatField()
     over_mile_fee = models.FloatField()
 
+    def __str__(self):
+        return f"{self.id}"
+
 
 class Vehicle (models.Model):
     vin = models.CharField(max_length=20, unique=True)
@@ -79,16 +82,26 @@ class Vehicle (models.Model):
     class_id = models.ForeignKey(
         Vehicle_class, on_delete=models.CASCADE, related_name="class_vehicles")
 
+    def __str__(self):
+        return f"{self.id}"
+
 
 class Coupon (models.Model):
+    coupon_num = models.CharField(max_length=15, unique=True, default='')
     discount_percentage = models.FloatField()
     start_date = models.DateField(auto_now=False, auto_now_add=False)
     end_date = models.DateField(auto_now=False, auto_now_add=False)
+
+    def __str__(self):
+        return f"{self.id}"
 
 
 class Invoice (models.Model):
     invoice_date = models.DateField(auto_now=False, auto_now_add=False)
     amount = models.FloatField()
+
+    def __str__(self):
+        return f"{self.id}"
 
 
 class Payment(models.Model):
@@ -98,6 +111,9 @@ class Payment(models.Model):
     payment_amount = models.FloatField()
     invoice_id = models.ForeignKey(
         Invoice, blank=True, on_delete=models.CASCADE, related_name="payments")
+
+    def __str__(self):
+        return f"{self.id}"
 
 
 class Rental_service(models.Model):
@@ -120,3 +136,6 @@ class Rental_service(models.Model):
         Office, on_delete=models.CASCADE, related_name="dropoff_office_rervations")
     rental_invoice_id = models.ForeignKey(
         Invoice,  blank=True, on_delete=models.CASCADE, related_name="Invoice_rervations")
+
+    def __str__(self):
+        return f"{self.id}"
