@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 import hashlib
 from itertools import chain
-from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation
+from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation, Rental_service, Office
 from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
@@ -129,3 +129,33 @@ def logout_view(request):
         return render(request, "CarRental/login.html", {
             "message": "Logged out."
         })
+
+
+def makereservation(request):
+    if request.method == "GET":
+        return render(request, "CarRental/makereservation.html")
+
+    if not request.user.is_authenticated:
+        messages.error(request, "You are not authorized to view this page!")
+        return HttpResponseRedirect(reverse("CarRental:login"))
+
+    else:
+        if request.method == "POST":
+            individual_customer = Individual_customer.objects.filter(
+                user_name=request.user.username).first()  # Checking if this user is an individual customer
+            corporate_customer = Corporate_customer.objects.filter(
+                user_name=request.user.username).first()  # checking if the user is a corporate customer
+
+            if individual_customer is not None:
+                # This means we have an individual customer making a reservation
+                reservation = Rental_service(pickup_date=request.POST["pickup_date"], dropoff_date=request.POST["dropoff_date"], office_pickup=Office.objects.get(
+                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), individual_cust_id=individual_customer, start_odometer=request.POST["start_odometer"])
+                reservation.save()
+                return HttpResponseRedirect(reverse("CarRental:index"))
+            else:
+                # This means a corporate customer is making a reservation
+                reservation = Rental_service(pickup_date=request.POST["pickup_date"], dropoff_date=request.POST["dropoff_date"], office_pickup=Office.objects.get(
+                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), corporate_cust_id=corporate_customer, start_odometer=request.POST["start_odometer"])
+                reservation.save()
+                return HttpResponseRedirect(reverse("CarRental:index"))
+    return HttpResponseRedirect(reverse("CarRental:index"))

@@ -120,22 +120,22 @@ class Rental_service(models.Model):
     pickup_date = models.DateField(auto_now=False, auto_now_add=False)
     dropoff_date = models.DateField(auto_now=False, auto_now_add=False)
     start_odometer = models.FloatField(blank=True)
-    end_odometer = models.FloatField(blank=True)
-    daily_limit = models.IntegerField(blank=True)
+    end_odometer = models.FloatField(null=True, blank=True)
+    daily_limit = models.IntegerField(null=True, blank=True)
     vehicle_id = models.ForeignKey(
-        Vehicle,  blank=True, on_delete=models.CASCADE, related_name="vehicle_rervations")
+        Vehicle, null=True, blank=True, on_delete=models.CASCADE, related_name="vehicle_rervations")
     corporate_cust_id = models.ForeignKey(
-        Corporate_customer,  blank=True, on_delete=models.CASCADE, related_name="Corporate_cust_rervations")
+        Corporate_customer, null=True, blank=True, on_delete=models.CASCADE, related_name="Corporate_cust_rervations")
     individual_cust_id = models.ForeignKey(
-        Individual_customer,  blank=True, on_delete=models.CASCADE, related_name="Individual_cust_rervations")
+        Individual_customer, null=True, blank=True, on_delete=models.CASCADE, related_name="Individual_cust_rervations")
     coupun_num = models.ForeignKey(
-        Coupon,  blank=True, on_delete=models.CASCADE, related_name="coupon_rervations")
+        Coupon, null=True,  blank=True, on_delete=models.CASCADE, related_name="coupon_rervations")
     office_pickup = models.ForeignKey(
         Office, on_delete=models.CASCADE, related_name="Pickup_office_rervations")
     office_dropoff = models.ForeignKey(
         Office, on_delete=models.CASCADE, related_name="dropoff_office_rervations")
     rental_invoice_id = models.ForeignKey(
-        Invoice,  blank=True, on_delete=models.CASCADE, related_name="Invoice_rervations")
+        Invoice, null=True, blank=True, on_delete=models.CASCADE, related_name="Invoice_rervations")
 
     def __str__(self):
         return f"{self.id}"
