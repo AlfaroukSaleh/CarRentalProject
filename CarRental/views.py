@@ -25,7 +25,20 @@ def index(request):
 def adduserindividual(request):  # used for adding Indivdual users
     if request.method == "GET":
         return render(request, "CarRental/adduserindividual.html", {
-            "Insurance_companies": Insurance_company.objects.all()
+            "Insurance_companies": Insurance_company.objects.all(),
+            "FormItem": [('user_name','text','Username'),
+                            ('user_email','email','Email'),
+                            ('user_phone','tel','Phone Number'),
+                            ('user_pass1','passward','Password'),
+                            ('user_pass2','passward','Comfirm Password'),
+                            ('first_name','text','First Name'),
+                            ('last_name','text','Last Name'),
+                            ('city','text','City'),
+                            ('state','text','State'),
+                            ('zip_code','number','ZipCode'),
+                            ('driver_lic_number','text','Lisence Number'),
+                            ('policy_num','text','Ins. Policy Number')
+                        ]
         })
 
     if request.user.is_authenticated:
@@ -73,7 +86,20 @@ def adduserindividual(request):  # used for adding Indivdual users
 def addusercorporate(request):  # used for adding Corporate users
     if request.method == "GET":
         return render(request, "CarRental/addusercorporate.html", {
-            "Corporations": Corporation.objects.all()
+            "Corporations": Corporation.objects.all(),
+            "FormItem":[('user_name','text','Username'),
+                        ('user_email','email','Email'),
+                        ('user_phone','tel','Phone Number'),
+                        ('user_pass1','passward','Password'),
+                        ('user_pass2','passward','Comfirm Password'),
+                        ('first_name','text','First Name'),
+                        ('last_name','text','Last Name'),
+                        ('city','text','City'),
+                        ('state','text','State'),
+                        ('zip_code','number','ZipCode'),
+                        ('driver_lic_number','text','Lisence Number'),
+                        ('emp_id','number','Employee ID')
+                    ]
         })
 
     if request.user.is_authenticated:

@@ -1,120 +1,126 @@
 <html>
 
 <head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 </head>
 
 
 <body>
-
+<div class="o-contain">
+    <div class="o-header">
+        <h1 class="display-5">Create Your Coporate Account</h1>
+    </div>
+    
+    <hr class="my-4">
     <form class="user" action="{% url 'CarRental:addusercorporate' %}" method="post">
         {% csrf_token %}
-
-
-
-
-
-        <div class="form-group">
-
-            <input type="text" class="form-control form-control-user" id="exampleuserName" placeholder="username"
-                name="user_name">
-
-
+        {% for itm,tp,name in FormItem %}
+                <!-- <option value="{{corporation.id}}">{{corporation.corp_name}}</option> -->
+            <div class="form-group">
+                <label for="example{{itm}}" style="padding-right:20px">{{name}}</label>
+                <input type="{{tp}}" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" id="example{{itm}}" name="itm">
+            </div>    
+        {% endfor %}
+        <!-- <div class="form-group">
+            <label for="exampleuserName">Username</label>
+            <input type="text" class="form-control form-control-user" id="exampleuserName" name="user_name">
         </div>
         <div class="form-group">
-            <input type="email" class="form-control form-control-user" id="exampleInputEmail"
-                placeholder="Email Address" name="user_email">
+            <label for="exampleInputEmail">Email</label>
+            <input type="email" class="form-control form-control-user" id="exampleInputEmail" name="user_email">
         </div>
-
         <div class="form-group">
-            <input type="tel" class="form-control form-control-user" id="exampleInputTel" placeholder="Phone Number"
-                name="user_phone">
+            <label for="exampleInputTel">Phone Number</label>
+            <input type="tel" class="form-control form-control-user" id="exampleInputTel" name="user_phone">
         </div>
-
         <div class="form-group row">
             <div class="col-sm-6 mb-3 mb-sm-0">
-                <input type="password" class="form-control form-control-user" id="exampleInputPassword"
-                    placeholder="Password" name="user_pass1">
+                <label for="exampleInputPassword">Password</label>
+                <input type="password" class="form-control form-control-user" id="exampleInputPassword" name="user_pass1">
             </div>
             <div class="col-sm-6">
-                <input type="password" class="form-control form-control-user" id="exampleRepeatPassword"
-                    placeholder="Confirm Password" name="user_pass2">
+                <label for="exampleInputPassword">Password</label>
+                <input type="password" class="form-control form-control-user" id="exampleRepeatPassword" name="user_pass2">
             </div>
         </div>
-
         <div class="form-group">
-
-            <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="First Name"
-                name="first_name">
-
-
+            <label for="exampleFirstName">First Name</label>
+            <input type="text" class="form-control form-control-user" id="exampleFirstName" name="first_name">
         </div>
-
         <div class="form-group">
-
-            <input type="text" class="form-control form-control-user" id="exampleLastName" placeholder="Last Name"
-                name="last_name">
-
-
+            <label for="exampleLastName">Last Name</label>
+            <input type="text" class="form-control form-control-user" id="exampleLastName" name="last_name">
         </div>
-
         <div class="form-group">
-
-            <input type="text" class="form-control form-control-user" id="exampleCity" placeholder="City" name="city">
-
-
+            <label for="exampleCity">City</label>
+            <input type="text" class="form-control form-control-user" id="exampleCity" name="city">
         </div>
-
         <div class="form-group">
-
-            <input type="text" class="form-control form-control-user" id="exampleState" placeholder="State"
-                name="state">
-
-
+            <label for="exampleState">State</label>
+            <input type="text" class="form-control form-control-user" id="exampleState" name="state">
         </div>
-
         <div class="form-group">
-
-            <input type="number" class="form-control form-control-user" id="exampleZipCode" placeholder="Zip Code"
-                name="zip_code">
-
-
+            <label for="exampleZipCode">Zip Code</label>
+            <input type="number" class="form-control form-control-user" id="exampleZipCode" name="zip_code">
         </div>
-
         <div class="form-group">
-
+            <label for="exampleDriverLic">Driver License Number</label>
             <input type="text" class="form-control form-control-user" id="exampleDriverLic"
                 placeholder="Driver License Nubmer" name="driver_lic_number">
-
-
         </div>
 
         <div class="form-group">
+            <label for="Employee ID">Employee ID</label>
+            <input type="number" class="form-control form-control-user" id="exampleEmpId" name="emp_id">
+        </div> -->
 
-            <input type="number" class="form-control form-control-user" id="exampleEmpId" placeholder="Employee ID"
-                name="emp_id">
-
-
-        </div>
-
-
-
-        <div class="form-group row">
-            <div class="offset-3 col-sm-6 mb-3 mb-sm-0">
-                <select class="form-control" id="userTypeSelect" name="corp_id">
+        <div class="form-group" >
+            
+            <!-- <div class="offset-3 col-sm-6 mb-3 mb-sm-0"> -->
+                <label for="userTypeSelect" style="padding-right:20px">Corporation</label>
+                <select class="form-control" id="userTypeSelect" name="corp_id" style="float:right;width:60%;margin-right:17%">
                     {% for corporation in Corporations %}
-
                     <option value="{{corporation.id}}">{{corporation.corp_name}}</option>
                     {% endfor %}
                 </select>
-            </div>
+            <!-- </div> -->
         </div>
-
-
-        <button type="submit" class="btn btn-user btn-block btn-primary">Create
+        <button type="submit" class="btn btn-user btn-block btn-primary" style="width:50%;margin:10% 25% 10% 25%">Create
             Account</button>
-
     </form>
+</div>
+<div class="bot"> bottom field.</div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </body>
 
 </html>
+
+<style>
+.o-contain{
+    width:50%;
+    /* height:60%; */
+    margin:0% 25% 15% 25%;
+}
+.bot{
+    width:100%;
+    height:200px;
+    border: 5px solid;
+    background-color: black;
+    color:white;
+    text-align:center;
+}
+.form-group{
+    text-align:right;
+}
+.o-header{
+    text-align:center;
+    margin-top:5%;
+}
+</style>
