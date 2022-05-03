@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 
 import hashlib
 from itertools import chain
-from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation, Rental_service, Office, Vehicle_class
+from .models import Individual_customer, Corporate_customer, Insurance_company, Corporation, Rental_service, Office, Vehicle, Vehicle_class, Payment, Invoice, Coupon
 from django.contrib.auth import authenticate, login, logout
+import datetime
 
 # Create your views here.
 
@@ -26,19 +27,19 @@ def adduserindividual(request):  # used for adding Indivdual users
     if request.method == "GET":
         return render(request, "CarRental/adduserindividual.html", {
             "Insurance_companies": Insurance_company.objects.all(),
-            "FormItem": [('user_name','text','Username'),
-                            ('user_email','email','Email'),
-                            ('user_phone','tel','Phone Number'),
-                            ('user_pass1','passward','Password'),
-                            ('user_pass2','passward','Comfirm Password'),
-                            ('first_name','text','First Name'),
-                            ('last_name','text','Last Name'),
-                            ('city','text','City'),
-                            ('state','text','State'),
-                            ('zip_code','number','ZipCode'),
-                            ('driver_lic_number','text','Lisence Number'),
-                            ('policy_num','text','Ins. Policy Number')
-                        ]
+            "FormItem": [('user_name', 'text', 'Username'),
+                         ('user_email', 'email', 'Email'),
+                         ('user_phone', 'tel', 'Phone Number'),
+                         ('user_pass1', 'passward', 'Password'),
+                         ('user_pass2', 'passward', 'Comfirm Password'),
+                         ('first_name', 'text', 'First Name'),
+                         ('last_name', 'text', 'Last Name'),
+                         ('city', 'text', 'City'),
+                         ('state', 'text', 'State'),
+                         ('zip_code', 'number', 'ZipCode'),
+                         ('driver_lic_number', 'text', 'Lisence Number'),
+                         ('policy_num', 'text', 'Ins. Policy Number')
+                         ]
         })
 
     if request.user.is_authenticated:
@@ -87,19 +88,19 @@ def addusercorporate(request):  # used for adding Corporate users
     if request.method == "GET":
         return render(request, "CarRental/addusercorporate.html", {
             "Corporations": Corporation.objects.all(),
-            "FormItem":[('user_name','text','Username'),
-                        ('user_email','email','Email'),
-                        ('user_phone','tel','Phone Number'),
-                        ('user_pass1','passward','Password'),
-                        ('user_pass2','passward','Comfirm Password'),
-                        ('first_name','text','First Name'),
-                        ('last_name','text','Last Name'),
-                        ('city','text','City'),
-                        ('state','text','State'),
-                        ('zip_code','number','ZipCode'),
-                        ('driver_lic_number','text','Lisence Number'),
-                        ('emp_id','number','Employee ID')
-                    ]
+            "FormItem": [('user_name', 'text', 'Username'),
+                         ('user_email', 'email', 'Email'),
+                         ('user_phone', 'tel', 'Phone Number'),
+                         ('user_pass1', 'passward', 'Password'),
+                         ('user_pass2', 'passward', 'Comfirm Password'),
+                         ('first_name', 'text', 'First Name'),
+                         ('last_name', 'text', 'Last Name'),
+                         ('city', 'text', 'City'),
+                         ('state', 'text', 'State'),
+                         ('zip_code', 'number', 'ZipCode'),
+                         ('driver_lic_number', 'text', 'Lisence Number'),
+                         ('emp_id', 'number', 'Employee ID')
+                         ]
         })
 
     if request.user.is_authenticated:
@@ -192,14 +193,14 @@ def makereservation(request):
             if individual_customer is not None:
                 # This means we have an individual customer making a reservation
                 reservation = Rental_service(pickup_date=request.POST["pickup_date"], dropoff_date=request.POST["dropoff_date"], office_pickup=Office.objects.get(
-                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), individual_cust_id=individual_customer)
+                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), individual_cust_id=individual_customer, vehicle_class=Vehicle_class.objects.get(pk=request.POST["vehicle_class_id"]))
                 reservation.save()
                 # Head to the payment page with the reservation ID
                 return HttpResponseRedirect(reverse("CarRental:payment", args=(reservation.id,)))
             else:
                 # This means a corporate customer is making a reservation
                 reservation = Rental_service(pickup_date=request.POST["pickup_date"], dropoff_date=request.POST["dropoff_date"], office_pickup=Office.objects.get(
-                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), corporate_cust_id=corporate_customer)
+                    pk=request.POST["pickup_office_id"]), office_dropoff=Office.objects.get(pk=request.POST["dropoff_office_id"]), corporate_cust_id=corporate_customer, vehicle_class=Vehicle_class.objects.get(pk=request.POST["vehicle_class_id"]))
                 reservation.save()
                 # Head to the payment page with the reservation ID
                 return HttpResponseRedirect(reverse("CarRental:payment", args=(reservation.id,)))
@@ -211,9 +212,46 @@ def payment(request, reservation_id):
         messages.error(request, "You are not authorized to view this page!")
         return HttpResponseRedirect(reverse("CarRental:login"))
 
-    return render(request, "CarRental/payment.html")
-    #
-    #
-    # The payment page shall be implemented here
-    #
-    #
+    else:
+        if request.method == "POST":
+            dropoff_date = Rental_service.objects.get(
+                pk=reservation_id).dropoff_date
+            pickup_date = Rental_service.objects.get(
+                pk=reservation_id).pickup_date
+            daily_rate = Rental_service.objects.get(
+                pk=reservation_id).vehicle_class.daily_rate
+            # Calculate amount without coupon
+            amount = (dropoff_date - pickup_date).days * daily_rate
+
+            # Calculate amount with coupon
+            if request.POST["coupon_num"] != '':
+                coupon = Coupon.objects.get(
+                    coupon_num=request.POST["coupon_num"])
+                if coupon.start_date <= dropoff_date and coupon.end_date >= dropoff_date:
+                    amount = amount * (1 - coupon.discount_percentage / 100.)
+
+            invoice = Invoice(
+                amount=amount, invoice_date=datetime.date.today())
+            invoice.save()
+            payment = Payment(invoice_id=Invoice.objects.get(id=invoice.id), payment_amount=amount, payment_date=datetime.date.today(
+            ), card_number=request.POST["card_number"], name_on_card=request.POST["name_on_card"], exp_date=request.POST["exp_date"], cvv=request.POST["cvv"])
+            payment.save()
+            return HttpResponseRedirect(reverse("CarRental:invoice", args=(payment.id,)))
+
+    return render(request, "CarRental/payment.html", {"reservation_id": reservation_id})
+
+
+def invoice(request, payment_id):
+    if not request.user.is_authenticated:
+        messages.error(request, "You are not authorized to view this page!")
+        return HttpResponseRedirect(reverse("CarRental:login"))
+
+    request.session["amount"] = Payment.objects.get(
+        pk=payment_id).payment_amount
+    request.session["payment_date"] = Payment.objects.get(
+        pk=payment_id).payment_date.strftime('%m/%d/%Y')
+
+    return render(request, "CarRental/invoice.html", {
+        "amount": request.session["amount"],
+        "payment_date": request.session["payment_date"]
+    })

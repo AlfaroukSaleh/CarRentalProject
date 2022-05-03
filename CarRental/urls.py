@@ -12,7 +12,8 @@ urlpatterns = [
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("makereservation", views.makereservation, name="makereservation"),
-    path("payment/<int:reservation_id>", views.payment, name="payment")
+    path("payment/<int:reservation_id>", views.payment, name="payment"),
+    path("invoice/<int:payment_id>", views.invoice, name="invoice")
 
 
 ]

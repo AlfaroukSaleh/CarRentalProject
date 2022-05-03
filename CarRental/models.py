@@ -111,6 +111,9 @@ class Payment(models.Model):
     payment_amount = models.FloatField()
     invoice_id = models.ForeignKey(
         Invoice, null=True, blank=True, on_delete=models.CASCADE, related_name="payments")
+    name_on_card = models.CharField(max_length=25)
+    exp_date = models.CharField(max_length=4)
+    cvv = models.CharField(max_length=5)
 
     def __str__(self):
         return f"{self.id}"
@@ -122,6 +125,8 @@ class Rental_service(models.Model):
     start_odometer = models.FloatField(null=True, blank=True)
     end_odometer = models.FloatField(null=True, blank=True)
     daily_limit = models.IntegerField(null=True, blank=True)
+    vehicle_class = models.ForeignKey(
+        Vehicle_class, null=True, blank=True, on_delete=models.CASCADE, related_name="vehicle_class_rervations")
     vehicle_id = models.ForeignKey(
         Vehicle, null=True, blank=True, on_delete=models.CASCADE, related_name="vehicle_rervations")
     corporate_cust_id = models.ForeignKey(

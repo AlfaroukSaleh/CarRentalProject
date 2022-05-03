@@ -4,10 +4,49 @@
     <title>Payment Page</title>
 </head>
 
+<body>
 
-<h1>The payment process shall be done here</h1>
+    </div>
+    {% for error in messages %}
+    <div class="text-center m-3 alert alert-danger">
+        {{error}}
+    </div>
+    {% endfor %}
+    <form class="user" method="post" action="{% url 'CarRental:payment' reservation_id %}">
 
+        {% csrf_token %}
 
+        <div class="form-group">
+            <input type="text" class="form-control form-control-user" placeholder="Name on Card" name="name_on_card"
+                id="name_on_card">
+        </div>
+
+        <div class="form-group">
+            <input type="number" class="form-control form-control-user" placeholder="Card Number" name="card_number"
+                id="card_number">
+        </div>
+
+        <div class="form-group">
+            <input type="number" class="form-control form-control-user" placeholder="Exp Date MMYY" name="exp_date"
+                id="exp_date">
+        </div>
+
+        <div class="form-group">
+            <input type="number" class="form-control form-control-user" placeholder="CVV" name="cvv" id="cvv">
+        </div>
+
+        <div class="form-group">
+            <input type="text" class="form-control form-control-user" placeholder="Coupon Number" name="coupon_num"
+                id="coupon_num">
+        </div>
+
+        <button type="submit" class="btn btn-danger btn-user btn-block">
+            Pay Now
+        </button>
+
+    </form>
+
+</body>
 
 <a class="btn btn-primary" href="{% url 'CarRental:logout' %}">Logout</a>
 
