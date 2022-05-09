@@ -1,15 +1,21 @@
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    
 </head>
 
 
 <body>
+    {% for error in messages %}
+    <div id="alert" class="alert alert-info" style="right:20%;left:20%; width:60%; position: absolute;
+    z-index: 80;"> {{error}} <button-x id="close_msg">x</button-x> </div>
+    {% endfor %}
+
     <div class="o-contain">
         <div class="o-header">
             <h1 class="display-5">Create Your Individual Account</h1>
@@ -22,7 +28,7 @@
                 <!-- <option value="{{corporation.id}}">{{corporation.corp_name}}</option> -->
             <div class="form-group">
                 <label for="example{{itm}}" style="padding-right:20px">{{name}}</label>
-                <input type="{{tp}}" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" id="example{{itm}}" name="itm">
+                <input type="{{tp}}" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" id="example{{itm}}" name="{{itm}}">
             </div>    
         {% endfor %}
 <!-- 
@@ -124,34 +130,53 @@
     </form>
     </div>
 
-    <div class="bot"> bottom field.</div>
+    <!-- <div class="bot"> bottom field.</div> -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    
 </body>
 
 </html>
-
+<script text="type/javascript">
+    var test = "{{test}}";
+    console.log(test);
+    var btn = document.getElementById("close_msg");
+    btn.onclick=function(){
+        document.getElementById("alert").style['display']='none';
+    }
+</script>
 <style>
-    .o-contain{
-        width:50%;
-        /* height:60%; */
-        margin:0% 25% 15% 25%;
-    }
-    .bot{
-        width:100%;
-        height:200px;
-        border: 5px solid;
-        background-color: black;
-        color:white;
-        text-align:center;
-    }
-    .form-group{
-        text-align:right;
-    }
-    .o-header{
-        text-align:center;
-        margin-top:5%;
-    }
-    </style>
+.o-contain{
+    width:50%;
+    /* height:60%; */
+    margin:0% 25% 15% 25%;
+}
+.bot{
+    width:100%;
+    height:200px;
+    border: 5px solid;
+    background-color: black;
+    color:white;
+    text-align:center;
+}
+.form-group{
+    text-align:right;
+}
+.o-header{
+    text-align:center;
+    margin-top:5%;
+}
+button-x{
+    border: none;
+    background-color: rgb(0,0,0,0);
+    position: absolute;
+    top: 0;
+    right: 0; 
+    cursor:pointer;
+}
+button-x:hover{
+    background-color: rgba(209, 39, 67, 0.5);
+}
+</style>

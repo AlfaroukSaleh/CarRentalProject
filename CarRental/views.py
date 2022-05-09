@@ -30,16 +30,17 @@ def adduserindividual(request):  # used for adding Indivdual users
             "FormItem": [('user_name', 'text', 'Username'),
                          ('user_email', 'email', 'Email'),
                          ('user_phone', 'tel', 'Phone Number'),
-                         ('user_pass1', 'passward', 'Password'),
-                         ('user_pass2', 'passward', 'Comfirm Password'),
+                         ('user_pass1', 'password', 'Password'),
+                         ('user_pass2', 'password', 'Comfirm Password'),
                          ('first_name', 'text', 'First Name'),
                          ('last_name', 'text', 'Last Name'),
                          ('city', 'text', 'City'),
                          ('state', 'text', 'State'),
-                         ('zip_code', 'number', 'ZipCode'),
+                         ('zip_code', 'text', 'ZipCode'),
                          ('driver_lic_number', 'text', 'Lisence Number'),
                          ('policy_num', 'text', 'Ins. Policy Number')
-                         ]
+                         ],
+            "test": len(request.POST)
         })
 
     if request.user.is_authenticated:
@@ -47,7 +48,12 @@ def adduserindividual(request):  # used for adding Indivdual users
         return HttpResponseRedirect(reverse("CarRental:index"))
     else:
         if request.method == "POST":
-
+        #     return render(request, "CarRental/adduserindividual.html", {
+        #     "test": request.POST
+        # })
+            if len(request.POST) < 14:
+                messages.error(request, " lack some information, please enter all fields requried!")
+                return HttpResponseRedirect(reverse("CarRental:adduserindividual"))
             # Checks if this email was previously used
             user_email_validator = Individual_customer.objects.filter(
                 user_email=request.POST["user_email"]).first()
@@ -91,16 +97,17 @@ def addusercorporate(request):  # used for adding Corporate users
             "FormItem": [('user_name', 'text', 'Username'),
                          ('user_email', 'email', 'Email'),
                          ('user_phone', 'tel', 'Phone Number'),
-                         ('user_pass1', 'passward', 'Password'),
-                         ('user_pass2', 'passward', 'Comfirm Password'),
+                         ('user_pass1', 'password', 'Password'),
+                         ('user_pass2', 'password', 'Comfirm Password'),
                          ('first_name', 'text', 'First Name'),
                          ('last_name', 'text', 'Last Name'),
                          ('city', 'text', 'City'),
                          ('state', 'text', 'State'),
-                         ('zip_code', 'number', 'ZipCode'),
+                         ('zip_code', 'text', 'ZipCode'),
                          ('driver_lic_number', 'text', 'Lisence Number'),
-                         ('emp_id', 'number', 'Employee ID')
-                         ]
+                         ('emp_id', 'text', 'Employee ID')
+                         ],
+            "test": request.POST
         })
 
     if request.user.is_authenticated:
@@ -109,6 +116,12 @@ def addusercorporate(request):  # used for adding Corporate users
     else:
         if request.method == "POST":
 
+            if len(request.POST) < 14:
+                messages.error(request, " lack some information, please enter all fields requried!")
+                return HttpResponseRedirect(reverse("CarRental:addusercorporate"))
+            # return render(request, "CarRental/addusercorporate.html", {
+            #     "test": len(request.POST)
+            # })
             # Checks if this email was previously used
             user_email_validator = Individual_customer.objects.filter(
                 user_email=request.POST["user_email"]).first()
@@ -176,15 +189,24 @@ def logout_view(request):
 
 
 def makereservation(request):
+   
     if request.method == "GET":
         return render(request, "CarRental/index.html")
 
     if not request.user.is_authenticated:
         messages.error(request, "You are not authorized to view this page!")
         return HttpResponseRedirect(reverse("CarRental:login"))
-
+    
     else:
         if request.method == "POST":
+            l = ['pickup_date','dropoff_date','vehicle_class_id','pickup_office_id','dropoff_office_id']
+            invalid = []
+            for itm in request.POST:
+                if itm in l and request.POST[itm] == 'default':
+                    invalid.append(itm)
+            if len(invalid):
+                messages.error(request, " and ".join(invalid)+" is/are empty,please enter proper info here!")
+                return HttpResponseRedirect(reverse("CarRental:index"))
             individual_customer = Individual_customer.objects.filter(
                 user_name=request.user.username).first()  # Checking if this user is an individual customer
             corporate_customer = Corporate_customer.objects.filter(
@@ -214,6 +236,18 @@ def payment(request, reservation_id):
 
     else:
         if request.method == "POST":
+            # return render(request, "CarRental/payment.html", {
+            #     "reservation_id": reservation_id,
+            #     "sth": list(request.POST)
+            # })
+            l = ['card_number','name_on_card','exp_date','cvv']
+            invalid = []
+            for itm in list(request.POST):
+                if itm in l and request.POST[itm] == '':
+                    invalid.append(itm)
+            if len(invalid):
+                messages.error(request, " and ".join(invalid)+" is/are empty,please enter proper info here!")
+                return HttpResponseRedirect(reverse("CarRental:payment", args=(reservation_id,)))
             dropoff_date = Rental_service.objects.get(
                 pk=reservation_id).dropoff_date
             pickup_date = Rental_service.objects.get(
@@ -225,14 +259,21 @@ def payment(request, reservation_id):
 
             # Calculate amount with coupon
             if request.POST["coupon_num"] != '':
-                coupon = Coupon.objects.get(
-                    coupon_num=request.POST["coupon_num"])
+                try:
+                    coupon = Coupon.objects.get(
+                        coupon_num=request.POST["coupon_num"])
+                except Coupon.DoesNotExist:
+                    messages.error(request, "Invalid Coupon Number!")
+                    return HttpResponseRedirect(reverse("CarRental:payment", args=(reservation_id,)))
+                
+                
                 if coupon.start_date <= dropoff_date and coupon.end_date >= dropoff_date:
                     amount = amount * (1 - coupon.discount_percentage / 100.)
 
             invoice = Invoice(
                 amount=amount, invoice_date=datetime.date.today())
             invoice.save()
+            
             payment = Payment(invoice_id=Invoice.objects.get(id=invoice.id), payment_amount=amount, payment_date=datetime.date.today(
             ), card_number=request.POST["card_number"], name_on_card=request.POST["name_on_card"], exp_date=request.POST["exp_date"], cvv=request.POST["cvv"])
             payment.save()

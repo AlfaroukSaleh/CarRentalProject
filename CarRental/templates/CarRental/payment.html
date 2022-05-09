@@ -1,53 +1,112 @@
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <title>Payment Page</title>
+    <title>Payment</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
 </head>
 
 <body>
-
-    </div>
     {% for error in messages %}
-    <div class="text-center m-3 alert alert-danger">
-        {{error}}
-    </div>
+    <div id="alert" class="alert alert-info" style="right:20%;left:20%; width:60%; position: absolute;
+    z-index: 80;"> {{error}} <button-x id="close_msg">x</button-x> </div>
     {% endfor %}
-    <form class="user" method="post" action="{% url 'CarRental:payment' reservation_id %}">
+    <div class="o-header">
+        <h1 class="display-5">Make Your Payment Now!</h1>
+    </div>
+    
+    <hr class="my-4" style="width:60%;">
 
+    <form class="user" method="post" style="width:60%;margin:auto;" action="{% url 'CarRental:payment' reservation_id %}">
         {% csrf_token %}
 
         <div class="form-group">
-            <input type="text" class="form-control form-control-user" placeholder="Name on Card" name="name_on_card"
-                id="name_on_card">
+            <label for="name_on_card" style="padding-right:20px">Name on Card</label>
+            <input type="text" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" name="name_on_card" id="name_on_card">
         </div>
 
         <div class="form-group">
-            <input type="number" class="form-control form-control-user" placeholder="Card Number" name="card_number"
-                id="card_number">
+            <label for="card_number" style="padding-right:20px">Card Number</label>
+            <input type="text" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" name="card_number" id="card_number">
         </div>
 
         <div class="form-group">
-            <input type="number" class="form-control form-control-user" placeholder="Exp Date MMYY" name="exp_date"
-                id="exp_date">
+            <label for="exp_date" style="padding-right:20px">Exp Date MMYY</label>
+            <input type="text" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" name="exp_date" id="exp_date">
         </div>
 
         <div class="form-group">
-            <input type="number" class="form-control form-control-user" placeholder="CVV" name="cvv" id="cvv">
+            <label for="cvv" style="padding-right:20px">CVV</label>
+            <input type="text" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" name="cvv" id="cvv">
         </div>
 
         <div class="form-group">
-            <input type="text" class="form-control form-control-user" placeholder="Coupon Number" name="coupon_num"
-                id="coupon_num">
+            <label for="coupon_num" style="padding-right:20px">Coupon Number</label>
+            <input type="text" class="form-control form-control-user" style="float:right;width:60%;margin-right:17%" name="coupon_num" id="coupon_num">
         </div>
-
-        <button type="submit" class="btn btn-danger btn-user btn-block">
-            Pay Now
-        </button>
-
+        <div class="o-btn-contain">
+            <button type="submit" class="btn btn-success btn-user btn-block" style="width:40%;display:inline-block;margin-right:5%">Pay Now</button>
+            <a class="btn btn-danger btn-user btn-block" role="button" style="width:40%;display:inline-block;margin-top:0;margin-left:5%;" href="{% url 'CarRental:index'%}">Cancel</a>   
+        </div>
     </form>
-
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
 </body>
 
-<a class="btn btn-primary" href="{% url 'CarRental:logout' %}">Logout</a>
-
 </html>
+<script type="text/javascript">
+    var sth = "{{coupon}}";
+    console.log(sth);
+    var btn = document.getElementById("close_msg");
+    btn.onclick=function(){
+        document.getElementById("alert").style['display']='none';
+    }
+</script>
+<style>
+.body{
+    background-color:rgb(243,243,243) ;
+}
+.o-contain{
+    width:50%;
+    /* height:60%; */
+    margin:0% 25% 15% 25%;
+}
+.bot{
+    width:100%;
+    height:200px;
+    border: 5px solid;
+    background-color: black;
+    color:white;
+    text-align:center;
+}
+.form-group{
+    text-align:right;
+}
+.o-header{
+    text-align:center;
+    margin-top:5%;
+}
+.o-btn-contain{
+    margin:10% 25% 10% 25%;
+}
+button-x{
+    border: none;
+    background-color: rgb(0,0,0,0);
+    position: absolute;
+    top: 0;
+    right: 0; 
+    cursor:pointer;
+}
+button-x:hover{
+    background-color: rgba(209, 39, 67, 0.5);
+}
+</style>
