@@ -86,7 +86,7 @@ def adduserindividual(request):  # used for adding Indivdual users
                 request, username=request.POST["user_name"], password=request.POST["user_pass1"])
             messages.success(request, "User added successfuly")
             login(request, u)
-            messages.success(request, "User added successfuly")
+            # messages.success(request, "User added successfuly")
             return HttpResponseRedirect(reverse("CarRental:index"))
 
 
